@@ -4,8 +4,8 @@ import com.techforb.challenge_server.models.User;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface UserService {
-	User getUserByEmail(String email);
+public interface TokenService {
+    void saveUserToken(User user, String accessToken);
 
-	String getCurrentUserEmail();
+    void revokeAllUserTokens(Long userId);
 }

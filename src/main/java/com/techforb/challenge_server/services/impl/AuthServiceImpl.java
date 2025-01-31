@@ -36,6 +36,11 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public AuthResponse registerUser(RegisterRequest registerRequest) {
+
+		if (registerRequest == null || registerRequest.getEmail() == null || registerRequest.getPassword() == null) {
+			throw new IllegalArgumentException("Email y contraseña son requeridos");
+		}
+
 		if (userRepository.existsByEmail(registerRequest.getEmail())) {
 			throw new IllegalStateException("El email ya se encuentra registrado");
 		}

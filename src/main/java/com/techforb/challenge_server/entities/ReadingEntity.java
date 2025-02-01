@@ -25,10 +25,14 @@ public class ReadingEntity {
 	@Column(nullable = false)
 	private LocalDateTime timestamp;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sensor_id", nullable = false)
 	private SensorEntity sensor;
 
 	@OneToMany(mappedBy = "reading", cascade = CascadeType.ALL)
 	private List<AlertEntity> alerts;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserEntity user;
 }

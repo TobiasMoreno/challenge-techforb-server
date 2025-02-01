@@ -23,10 +23,11 @@ public class SensorEntity {
 	@Column(nullable = false)
 	private boolean isAvailable;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "plant_id", nullable = false)
 	private PlantEntity plant;
 
-	@OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL)
-	private List<ReadingEntity> readings;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserEntity user;
 }

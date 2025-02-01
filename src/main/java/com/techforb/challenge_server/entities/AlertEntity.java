@@ -21,7 +21,7 @@ public class AlertEntity {
 	@Column(nullable = false)
 	private String message;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "reading_id", nullable = false)
 	private ReadingEntity reading;
 }

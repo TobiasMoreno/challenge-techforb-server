@@ -21,7 +21,7 @@ public class PlantEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity owner;
 

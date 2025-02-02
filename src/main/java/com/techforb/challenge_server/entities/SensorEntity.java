@@ -27,7 +27,7 @@ public class SensorEntity {
 	@JoinColumn(name = "plant_id", nullable = false)
 	private PlantEntity plant;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 }

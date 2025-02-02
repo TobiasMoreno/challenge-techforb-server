@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface AlertRepository extends JpaRepository<AlertEntity,Long> {
-	List<AlertEntity> id(Long id);
 
 	List<AlertEntity> findAllByReading(ReadingEntity reading);
 }

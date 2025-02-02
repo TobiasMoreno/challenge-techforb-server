@@ -54,18 +54,19 @@ class PlantServiceImplTest {
 
 		requestPlantDTO = new RequestPlantDTO();
 		requestPlantDTO.setName("Plant1");
+		when(userService.getCurrentUserEmail()).thenReturn("user@example.com");
 	}
 
 	@Test
 	void testGetAllPlants() {
 		String userEmail = "user@example.com";
 		when(plantRepository.findAllByOwner_Email(userEmail)).thenReturn(List.of(plantEntity));
-		when(modelMapperUtils.mapAll(List.of(plantEntity), ResponsePlantDTO.class)).thenReturn(List.of(new ResponsePlantDTO()));
+		when(modelMapperUtils.mapAll(List.of(plantEntity), ResponsePlantDTO.class)).thenReturn(List.of(new ResponsePlantDTO(),new ResponsePlantDTO()));
 
-		List<ResponsePlantDTO> result = plantService.getAllPlants(userEmail);
+		List<ResponsePlantDTO> result = plantService.getAllPlants();
 
 		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertEquals(2, result.size());
 		verify(plantRepository, times(1)).findAllByOwner_Email(userEmail);
 	}
 
@@ -75,7 +76,7 @@ class PlantServiceImplTest {
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.of(plantEntity));
 		when(modelMapperUtils.map(plantEntity, ResponsePlantDTO.class)).thenReturn(new ResponsePlantDTO());
 
-		ResponsePlantDTO result = plantService.getPlantById(1L, userEmail);
+		ResponsePlantDTO result = plantService.getPlantById(1L);
 
 		assertNotNull(result);
 		verify(plantRepository, times(1)).findByIdAndOwner_Email(1L, userEmail);
@@ -87,7 +88,7 @@ class PlantServiceImplTest {
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.empty());
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-			plantService.getPlantById(1L, userEmail);
+			plantService.getPlantById(1L);
 		});
 
 		assertEquals("Planta no encontrada para el usuario: user@example.com", exception.getMessage());
@@ -102,7 +103,7 @@ class PlantServiceImplTest {
 		when(plantRepository.save(plantEntity)).thenReturn(plantEntity);
 		when(modelMapperUtils.map(plantEntity, ResponsePlantDTO.class)).thenReturn(new ResponsePlantDTO());
 
-		ResponsePlantDTO result = plantService.createPlant(requestPlantDTO, userEmail);
+		ResponsePlantDTO result = plantService.createPlant(requestPlantDTO);
 
 		assertNotNull(result);
 		verify(plantRepository, times(1)).save(plantEntity);
@@ -114,7 +115,7 @@ class PlantServiceImplTest {
 		when(userService.getUserByEmail(userEmail)).thenReturn(null);
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-			plantService.createPlant(requestPlantDTO, userEmail);
+			plantService.createPlant(requestPlantDTO);
 		});
 
 		assertEquals("Usuario no encontrado: user@example.com", exception.getMessage());
@@ -128,7 +129,7 @@ class PlantServiceImplTest {
 		when(plantRepository.save(plantEntity)).thenReturn(plantEntity);
 		when(modelMapperUtils.map(plantEntity, ResponsePlantDTO.class)).thenReturn(new ResponsePlantDTO());
 
-		ResponsePlantDTO result = plantService.updatePlantById(1L, requestPlantDTO, userEmail);
+		ResponsePlantDTO result = plantService.updatePlantById(1L, requestPlantDTO);
 
 		assertNotNull(result);
 		verify(plantRepository, times(1)).save(plantEntity);
@@ -140,7 +141,7 @@ class PlantServiceImplTest {
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.empty());
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-			plantService.updatePlantById(1L, requestPlantDTO, userEmail);
+			plantService.updatePlantById(1L, requestPlantDTO);
 		});
 
 		assertEquals("La planta no existe para el usuario: user@example.com", exception.getMessage());
@@ -151,7 +152,7 @@ class PlantServiceImplTest {
 		String userEmail = "user@example.com";
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.of(plantEntity));
 
-		plantService.deletePlantById(1L, userEmail);
+		plantService.deletePlantById(1L);
 
 		verify(plantRepository, times(1)).delete(plantEntity);
 	}
@@ -162,7 +163,7 @@ class PlantServiceImplTest {
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.empty());
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-			plantService.deletePlantById(1L, userEmail);
+			plantService.deletePlantById(1L);
 		});
 
 		assertEquals("La planta no existe para el usuario: user@example.com", exception.getMessage());

@@ -24,20 +24,23 @@ public class PlantServiceImpl implements PlantService {
 	private final ModelMapperUtils modelMapperUtils;
 
 	@Override
-	public List<ResponsePlantDTO> getAllPlants(String userEmail) {
+	public List<ResponsePlantDTO> getAllPlants() {
+		String userEmail = userService.getCurrentUserEmail();
 		return modelMapperUtils.mapAll(
 				plantRepository.findAllByOwner_Email(userEmail), ResponsePlantDTO.class);
 	}
 
 	@Override
-	public ResponsePlantDTO getPlantById(Long id, String userEmail) {
+	public ResponsePlantDTO getPlantById(Long id) {
+		String userEmail = userService.getCurrentUserEmail();
 		return plantRepository.findByIdAndOwner_Email(id, userEmail)
 				.map(plant -> modelMapperUtils.map(plant, ResponsePlantDTO.class))
 				.orElseThrow(() -> new EntityNotFoundException("Planta no encontrada para el usuario: " + userEmail));
 	}
 
 	@Override
-	public ResponsePlantDTO createPlant(RequestPlantDTO requestPlantDTO, String userEmail) {
+	public ResponsePlantDTO createPlant(RequestPlantDTO requestPlantDTO) {
+		String userEmail = userService.getCurrentUserEmail();
 		ResponseUserDTO responseUserDTO = userService.getUserByEmail(userEmail);
 
 		if (responseUserDTO == null) {
@@ -53,7 +56,8 @@ public class PlantServiceImpl implements PlantService {
 	}
 
 	@Override
-	public ResponsePlantDTO updatePlantById(Long id, RequestPlantDTO requestPlantDTO, String userEmail) {
+	public ResponsePlantDTO updatePlantById(Long id, RequestPlantDTO requestPlantDTO) {
+		String userEmail = userService.getCurrentUserEmail();
 		PlantEntity plantEntity = plantRepository.findByIdAndOwner_Email(id, userEmail)
 				.orElseThrow(() -> new EntityNotFoundException("La planta no existe para el usuario: " + userEmail));
 
@@ -64,7 +68,8 @@ public class PlantServiceImpl implements PlantService {
 	}
 
 	@Override
-	public void deletePlantById(Long id, String userEmail) {
+	public void deletePlantById(Long id) {
+		String userEmail = userService.getCurrentUserEmail();
 		PlantEntity plantEntity = plantRepository.findByIdAndOwner_Email(id, userEmail)
 				.orElseThrow(() -> new EntityNotFoundException("La planta no existe para el usuario: " + userEmail));
 

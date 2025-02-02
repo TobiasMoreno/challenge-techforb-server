@@ -8,9 +8,9 @@ import java.util.List;
 
 @Service
 public interface PlantService {
-	List<ResponsePlantDTO> getAllPlants(String userEmail);
-	ResponsePlantDTO getPlantById(Long id, String userEmail);
-	ResponsePlantDTO createPlant(RequestPlantDTO requestPlantDTO, String userEmail);
-	ResponsePlantDTO updatePlantById(Long id, RequestPlantDTO requestPlantDTO, String userEmail);
-	void deletePlantById(Long id, String userEmail);
+	List<ResponsePlantDTO> getAllPlants();
+	ResponsePlantDTO getPlantById(Long id);
+	ResponsePlantDTO createPlant(RequestPlantDTO requestPlantDTO);
+	ResponsePlantDTO updatePlantById(Long id, RequestPlantDTO requestPlantDTO);
+	void deletePlantById(Long id);
 }

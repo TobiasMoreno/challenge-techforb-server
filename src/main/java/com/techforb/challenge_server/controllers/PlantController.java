@@ -26,8 +26,8 @@ public class PlantController {
 	@Operation(summary = "Obtener todas las plantas", description = "Devuelve todas las plantas asociadas a un usuario por su email")
 	@ApiResponse(responseCode = "200", description = "Lista de plantas obtenida correctamente")
 	@GetMapping("/list")
-	public ResponseEntity<List<ResponsePlantDTO>> getAllPlants(@RequestParam String userEmail) {
-		return ResponseEntity.ok(plantService.getAllPlants(userEmail));
+	public ResponseEntity<List<ResponsePlantDTO>> getAllPlants() {
+		return ResponseEntity.ok(plantService.getAllPlants());
 	}
 
 	@Operation(summary = "Obtener una planta por ID", description = "Devuelve una planta específica del usuario")
@@ -35,8 +35,8 @@ public class PlantController {
 	@ApiResponse(responseCode = "404", description = "Planta no encontrada",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@GetMapping("/{id}")
-	public ResponseEntity<ResponsePlantDTO> getPlantById(@PathVariable Long id, @RequestParam String userEmail) {
-		return ResponseEntity.ok(plantService.getPlantById(id, userEmail));
+	public ResponseEntity<ResponsePlantDTO> getPlantById(@PathVariable Long id) {
+		return ResponseEntity.ok(plantService.getPlantById(id));
 	}
 
 	@Operation(summary = "Crear una nueva planta", description = "Permite a un usuario crear una nueva planta")
@@ -45,9 +45,8 @@ public class PlantController {
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@PostMapping
 	public ResponseEntity<ResponsePlantDTO> createPlant(
-			@Valid @RequestBody RequestPlantDTO requestPlantDTO,
-			@RequestParam String userEmail) {
-		ResponsePlantDTO createdPlant = plantService.createPlant(requestPlantDTO, userEmail);
+			@Valid @RequestBody RequestPlantDTO requestPlantDTO) {
+		ResponsePlantDTO createdPlant = plantService.createPlant(requestPlantDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdPlant);
 	}
 
@@ -59,9 +58,8 @@ public class PlantController {
 	@PutMapping("/{id}")
 	public ResponseEntity<ResponsePlantDTO> updatePlantById(
 			@PathVariable Long id,
-			@Valid @RequestBody RequestPlantDTO requestPlantDTO,
-			@RequestParam String userEmail) {
-		ResponsePlantDTO updatedPlant = plantService.updatePlantById(id, requestPlantDTO, userEmail);
+			@Valid @RequestBody RequestPlantDTO requestPlantDTO) {
+		ResponsePlantDTO updatedPlant = plantService.updatePlantById(id, requestPlantDTO);
 		return ResponseEntity.ok(updatedPlant);
 	}
 
@@ -70,8 +68,8 @@ public class PlantController {
 	@ApiResponse(responseCode = "404", description = "Planta no encontrada",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletePlantById(@PathVariable Long id, @RequestParam String userEmail) {
-		plantService.deletePlantById(id, userEmail);
+	public ResponseEntity<Void> deletePlantById(@PathVariable Long id) {
+		plantService.deletePlantById(id);
 		return ResponseEntity.noContent().build();
 	}
 }

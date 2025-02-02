@@ -32,7 +32,7 @@ public class ReadingEntity {
 	@OneToMany(mappedBy = "reading", cascade = CascadeType.ALL)
 	private List<AlertEntity> alerts;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 }

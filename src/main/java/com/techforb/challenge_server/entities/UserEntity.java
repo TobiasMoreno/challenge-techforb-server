@@ -38,9 +38,6 @@ public class UserEntity implements UserDetails{
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-	private List<PlantEntity> plants;
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return role.getAuthorities();

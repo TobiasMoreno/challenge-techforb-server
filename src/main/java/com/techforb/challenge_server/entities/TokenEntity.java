@@ -33,7 +33,8 @@ public class TokenEntity {
     @Column(name = "expired")
     public boolean expired;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     public UserEntity user;
+
 }

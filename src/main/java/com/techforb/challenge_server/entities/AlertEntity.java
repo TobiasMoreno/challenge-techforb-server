@@ -1,5 +1,6 @@
 package com.techforb.challenge_server.entities;
 
+import com.techforb.challenge_server.models.AlertType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,8 @@ public class AlertEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String type;
+	@Enumerated(EnumType.STRING)
+	private AlertType type;
 
 	@Column(nullable = false)
 	private String message;

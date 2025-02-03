@@ -167,6 +167,8 @@ class AuthServiceImplTest {
 		when(userRepository.findByEmail(email)).thenReturn(Optional.of(userEntity));
 		when(jwtService.validateToken(refreshToken, userEntity)).thenReturn(true);
 		when(jwtService.generateToken(userEntity)).thenReturn("newAccessToken");
+		doNothing().when(tokenService).revokeAllUserTokens(1L);
+		doNothing().when(tokenService).saveUserToken(mappedUser, "newAccessToken");
 		when(modelMapperUtils.map(userEntity, User.class)).thenReturn(mappedUser);
 
 		// Act

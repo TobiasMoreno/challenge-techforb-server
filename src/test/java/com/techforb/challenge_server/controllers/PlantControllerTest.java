@@ -1,6 +1,5 @@
 package com.techforb.challenge_server.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.services.PlantService;
@@ -27,9 +26,6 @@ class PlantControllerTest {
 	private PlantService plantService;
 
 	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
 	private PlantController plantController;
 
 	private MockMvc mockMvc;
@@ -53,54 +49,47 @@ class PlantControllerTest {
 	@Test
 	void testGetAllPlants() throws Exception {
 		// Setup
-		when(plantService.getAllPlants("user@example.com")).thenReturn(List.of(responsePlantDTO));
+		when(plantService.getAllPlants()).thenReturn(List.of(responsePlantDTO));
 
-		// Call the controller and verify the response
-		mockMvc.perform(get("/api/plants/list")
-						.param("userEmail", "user@example.com"))
+		mockMvc.perform(get("/api/plants/list"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].name").value("Plant1"));
 
-		verify(plantService, times(1)).getAllPlants("user@example.com");
+		verify(plantService, times(1)).getAllPlants();
 	}
 
 	@Test
 	void testGetPlantById() throws Exception {
 		// Setup
-		when(plantService.getPlantById(1L, "user@example.com")).thenReturn(responsePlantDTO);
+		when(plantService.getPlantById(1L)).thenReturn(responsePlantDTO);
 
-		// Call the controller and verify the response
-		mockMvc.perform(get("/api/plants/{id}", 1L)
-						.param("userEmail", "user@example.com"))
+		mockMvc.perform(get("/api/plants/{id}", 1L))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value("Plant1"));
 
-		verify(plantService, times(1)).getPlantById(1L, "user@example.com");
+		verify(plantService, times(1)).getPlantById(1L);
 	}
 
 	@Test
 	void testCreatePlant() throws Exception {
 		// Setup
-		when(plantService.createPlant(requestPlantDTO, "user@example.com")).thenReturn(responsePlantDTO);
+		when(plantService.createPlant(requestPlantDTO)).thenReturn(responsePlantDTO);
 
-		// Call the controller and verify the response
 		mockMvc.perform(post("/api/plants")
-						.param("userEmail", "user@example.com")
 						.contentType("application/json")
 						.content("{\"name\": \"Plant1\"}"))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.name").value("Plant1"));
 
-		verify(plantService, times(1)).createPlant(requestPlantDTO, "user@example.com");
+		verify(plantService, times(1)).createPlant(requestPlantDTO);
 	}
 
 	@Test
 	void testUpdatePlantById() throws Exception {
 		responsePlantDTO.setName("Updated Plant");
-		when(plantService.updatePlantById(1L, requestPlantDTO, "user@example.com")).thenReturn(responsePlantDTO);
+		when(plantService.updatePlantById(1L, requestPlantDTO)).thenReturn(responsePlantDTO);
 
 		mockMvc.perform(put("/api/plants/{id}", 1L)
-						.param("userEmail", "user@example.com")
 						.contentType("application/json")
 						.content("{\"name\": \"Updated Plant\"}"))
 				.andExpect(jsonPath("$.*", hasSize(1)))
@@ -111,13 +100,11 @@ class PlantControllerTest {
 	@Test
 	void testDeletePlantById() throws Exception {
 		// Setup
-		doNothing().when(plantService).deletePlantById(1L, "user@example.com");
+		doNothing().when(plantService).deletePlantById(1L);
 
-		// Call the controller and verify the response
-		mockMvc.perform(delete("/api/plants/{id}", 1L)
-						.param("userEmail", "user@example.com"))
+		mockMvc.perform(delete("/api/plants/{id}", 1L))
 				.andExpect(status().isNoContent());
 
-		verify(plantService, times(1)).deletePlantById(1L, "user@example.com");
+		verify(plantService, times(1)).deletePlantById(1L);
 	}
 }

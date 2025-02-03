@@ -20,7 +20,7 @@ public class SensorEntity {
 	@Column(nullable = false)
 	private String type;
 
-	@Column(nullable = false)
+	@Column(nullable = false, name = "is_available")
 	private boolean isAvailable;
 
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -30,4 +30,7 @@ public class SensorEntity {
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
+
+	@OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL)
+	private List<ReadingEntity> readings;
 }

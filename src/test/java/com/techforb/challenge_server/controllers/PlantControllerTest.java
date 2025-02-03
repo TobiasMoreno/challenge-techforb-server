@@ -1,6 +1,5 @@
 package com.techforb.challenge_server.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.services.PlantService;
@@ -52,7 +51,6 @@ class PlantControllerTest {
 		// Setup
 		when(plantService.getAllPlants()).thenReturn(List.of(responsePlantDTO));
 
-		// Call the controller and verify the response
 		mockMvc.perform(get("/api/plants/list"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].name").value("Plant1"));
@@ -65,7 +63,6 @@ class PlantControllerTest {
 		// Setup
 		when(plantService.getPlantById(1L)).thenReturn(responsePlantDTO);
 
-		// Call the controller and verify the response
 		mockMvc.perform(get("/api/plants/{id}", 1L))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value("Plant1"));
@@ -78,7 +75,6 @@ class PlantControllerTest {
 		// Setup
 		when(plantService.createPlant(requestPlantDTO)).thenReturn(responsePlantDTO);
 
-		// Call the controller and verify the response
 		mockMvc.perform(post("/api/plants")
 						.contentType("application/json")
 						.content("{\"name\": \"Plant1\"}"))
@@ -106,7 +102,6 @@ class PlantControllerTest {
 		// Setup
 		doNothing().when(plantService).deletePlantById(1L);
 
-		// Call the controller and verify the response
 		mockMvc.perform(delete("/api/plants/{id}", 1L))
 				.andExpect(status().isNoContent());
 

@@ -25,14 +25,16 @@ public class AlertController {
 	private final AlertService alertService;
 
 	@Operation(summary = "Obtener todas las alertas", description = "Devuelve todas las alertas asociadas a un usuario por su email")
-	@ApiResponse(responseCode = "200", description = "Lista de alertas obtenida correctamente")
+	@ApiResponse(responseCode = "200", description = "Lista de alertas obtenida correctamente",
+			content = @Content(schema = @Schema(implementation = ResponseAlertDTO.class)))
 	@GetMapping("/list")
 	public ResponseEntity<List<ResponseAlertDTO>> getAllAlerts() {
 		return ResponseEntity.ok(alertService.getAllAlerts());
 	}
 
 	@Operation(summary = "Obtener una alerta por ID", description = "Devuelve una alerta específica del usuario")
-	@ApiResponse(responseCode = "200", description = "Alerta encontrada")
+	@ApiResponse(responseCode = "200", description = "Alerta encontrada",
+			content = @Content(schema = @Schema(implementation = ResponseAlertDTO.class)))
 	@ApiResponse(responseCode = "404", description = "Alerta no encontrada",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@GetMapping("/{id}")
@@ -41,7 +43,8 @@ public class AlertController {
 	}
 
 	@Operation(summary = "Obtener alertas por tipo", description = "Obtiene alertas de tipo ALERTA_MEDIA o ALERTA_ROJA")
-	@ApiResponse(responseCode = "200", description = "Lista de alertas obtenida correctamente")
+	@ApiResponse(responseCode = "200", description = "Lista de alertas obtenida correctamente",
+			content = @Content(schema = @Schema(implementation = ResponseAlertDTO.class)))
 	@ApiResponse(responseCode = "404", description = "No hay alertas encontradas",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@GetMapping("/type")
@@ -51,7 +54,8 @@ public class AlertController {
 	}
 
 	@Operation(summary = "Crear una nueva alerta", description = "Permite a un usuario crear una nueva alerta")
-	@ApiResponse(responseCode = "201", description = "Alerta creada correctamente")
+	@ApiResponse(responseCode = "201", description = "Alerta creada correctamente",
+			content = @Content(schema = @Schema(implementation = ResponseAlertDTO.class)))
 	@ApiResponse(responseCode = "400", description = "Datos inválidos",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@PostMapping
@@ -75,7 +79,8 @@ public class AlertController {
 	}
 
 	@Operation(summary = "Eliminar una alerta", description = "Elimina una alerta específica del usuario")
-	@ApiResponse(responseCode = "204", description = "Alerta eliminada correctamente")
+	@ApiResponse(responseCode = "204", description = "Alerta eliminada correctamente",
+			content = @Content(schema = @Schema(implementation = ResponseAlertDTO.class)))
 	@ApiResponse(responseCode = "404", description = "Alerta no encontrada",
 			content = @Content(schema = @Schema(implementation = ApiError.class)))
 	@DeleteMapping("/{id}")

@@ -21,6 +21,9 @@ public class PlantEntity {
 	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false)
+	private String country;
+
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity owner;

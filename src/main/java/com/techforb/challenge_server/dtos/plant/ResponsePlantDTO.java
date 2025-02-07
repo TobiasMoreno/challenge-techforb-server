@@ -14,6 +14,7 @@ import java.util.List;
 public class ResponsePlantDTO {
 	private Long id;
 	private String name;
+	private String country;
 	private String ownerEmail;
-	private List<String> sensors;
+	private List<ResponseSensorDTO> sensors;
 }

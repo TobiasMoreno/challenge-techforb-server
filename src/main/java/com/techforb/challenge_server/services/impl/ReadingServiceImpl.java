@@ -5,6 +5,7 @@ import com.techforb.challenge_server.dtos.alert.RequestAlertDTO;
 import com.techforb.challenge_server.dtos.alert.ResponseAlertDTO;
 import com.techforb.challenge_server.dtos.reading.RequestReadingDTO;
 import com.techforb.challenge_server.dtos.reading.RequestUpdateReadingDTO;
+import com.techforb.challenge_server.dtos.sensor.ResponseSensorDTO;
 import com.techforb.challenge_server.dtos.user.ResponseUserDTO;
 import com.techforb.challenge_server.entities.AlertEntity;
 import com.techforb.challenge_server.entities.ReadingEntity;
@@ -43,7 +44,7 @@ public class ReadingServiceImpl implements ReadingService {
 
 		for (ReadingEntity readingEntity : readingEntities) {
 			ResponseReadingDTO responseReadingDTO = modelMapperUtils.map(readingEntity, ResponseReadingDTO.class);
-			responseReadingDTO.setSensor(readingEntity.getSensor().getType());
+			responseReadingDTO.setSensor(modelMapperUtils.map(readingEntity.getSensor(),ResponseSensorDTO.class));
 			responseReadingDTO.setAlerts(alertService.getAlertsByReadingId(readingEntity));
 
 			readings.add(responseReadingDTO);
@@ -62,7 +63,7 @@ public class ReadingServiceImpl implements ReadingService {
 		}
 
 		ResponseReadingDTO responseReadingDTO = modelMapperUtils.map(readingEntity, ResponseReadingDTO.class);
-		responseReadingDTO.setSensor(readingEntity.getSensor().getType());
+		responseReadingDTO.setSensor(modelMapperUtils.map(readingEntity.getSensor(),ResponseSensorDTO.class));
 		responseReadingDTO.setAlerts(alertService.getAlertsByReadingId(readingEntity));
 		return responseReadingDTO;
 	}

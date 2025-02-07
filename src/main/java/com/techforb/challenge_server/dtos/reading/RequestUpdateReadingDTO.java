@@ -10,10 +10,7 @@ import java.util.List;
 public class RequestUpdateReadingDTO {
 
 	private Double readingValue;
-
 	private LocalDateTime timestamp;
-
 	private Long sensorId;
-
 	private List<ResponseAlertDTO> alerts;
 }

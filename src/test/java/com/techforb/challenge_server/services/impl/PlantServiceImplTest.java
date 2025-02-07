@@ -45,7 +45,7 @@ class PlantServiceImplTest {
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		plantEntity = new PlantEntity(1L, "Plant1", new UserEntity(), null);
+		plantEntity = new PlantEntity(1L, "Plant1",null, new UserEntity(), null);
 
 		responseUserDTO = new ResponseUserDTO();
 		responseUserDTO.setId(1L);

@@ -8,4 +8,7 @@ public class RequestPlantDTO {
 
 	@NotBlank(message = "El nombre de la planta es obligatorio")
 	private String name;
+
+	private String country;
+
 }

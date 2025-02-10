@@ -33,4 +33,7 @@ public class SensorEntity {
 
 	@OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL)
 	private List<ReadingEntity> readings;
+
+	@OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL)
+	private List<AlertEntity> alerts;
 }

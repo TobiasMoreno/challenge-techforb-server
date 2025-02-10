@@ -2,6 +2,7 @@ package com.techforb.challenge_server.controllers;
 
 import com.techforb.challenge_server.common.dto.ApiError;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
+import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.services.PlantService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,5 +72,17 @@ public class PlantController {
 	public ResponseEntity<Void> deletePlantById(@PathVariable Long id) {
 		plantService.deletePlantById(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "Obtener estadísticas de plantas", description = "Devuelve la cantidad de lecturas OK, alertas medias y alertas rojas por planta para el usuario autenticado.")
+	@ApiResponse(responseCode = "200", description ="Lista de estadísticas de plantas obtenida correctamente",
+	content = @Content(schema = @Schema(implementation = ApiError.class)))
+	@ApiResponse(responseCode = "403", description = "Acceso No Autorizado",
+			content = @Content(schema = @Schema(implementation = ApiError.class)))
+	@ApiResponse(responseCode = "404", description = "No se encontraron plantas para el usuario autenticado",
+			content = @Content(schema = @Schema(implementation = ApiError.class)))
+	@GetMapping("/stats")
+	public ResponseEntity<List<ResponseCountPlantDTO>> getPlantStats() {
+		return ResponseEntity.ok(plantService.getCountPlants());
 	}
 }

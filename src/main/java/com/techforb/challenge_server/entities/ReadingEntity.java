@@ -25,7 +25,7 @@ public class ReadingEntity {
 	@Column(nullable = false)
 	private LocalDateTime timestamp;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "sensor_id", nullable = false)
 	private SensorEntity sensor;
 

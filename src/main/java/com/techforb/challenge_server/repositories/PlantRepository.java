@@ -13,4 +13,5 @@ public interface PlantRepository extends JpaRepository<PlantEntity,Long> {
 	List<PlantEntity> findAllByOwner_Email(@Email String ownerEmail);
 
 	Optional<PlantEntity> findByIdAndOwner_Email(Long id, @Email String ownerEmail);
+
 }

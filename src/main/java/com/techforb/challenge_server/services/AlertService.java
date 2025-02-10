@@ -17,4 +17,6 @@ public interface AlertService {
 	ResponseAlertDTO updateAlertById(Long id, RequestAlertDTO requestAlertDTO);
 	void deleteAlertById(Long alertId);
 	List<ResponseAlertDTO> getAlertsByReadingId(ReadingEntity readingEntity);
+	long getMediumAlertsCountByUser();
+	long getRedAlertsCountByUser();
 }

@@ -1,11 +1,13 @@
 package com.techforb.challenge_server.services.impl;
 
 import com.techforb.challenge_server.common.mapper.ModelMapperUtils;
+import com.techforb.challenge_server.dtos.alert.ResponseAlertCount;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
+import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.dtos.user.ResponseUserDTO;
-import com.techforb.challenge_server.entities.PlantEntity;
-import com.techforb.challenge_server.entities.UserEntity;
+import com.techforb.challenge_server.entities.*;
+import com.techforb.challenge_server.models.AlertType;
 import com.techforb.challenge_server.repositories.PlantRepository;
 import com.techforb.challenge_server.services.PlantService;
 import com.techforb.challenge_server.services.UserService;
@@ -13,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,6 +65,7 @@ public class PlantServiceImpl implements PlantService {
 				.orElseThrow(() -> new EntityNotFoundException("La planta no existe para el usuario: " + userEmail));
 
 		plantEntity.setName(requestPlantDTO.getName());
+		plantEntity.setCountry(requestPlantDTO.getCountry());
 		plantRepository.save(plantEntity);
 
 		return modelMapperUtils.map(plantEntity, ResponsePlantDTO.class);
@@ -74,5 +78,52 @@ public class PlantServiceImpl implements PlantService {
 				.orElseThrow(() -> new EntityNotFoundException("La planta no existe para el usuario: " + userEmail));
 
 		plantRepository.delete(plantEntity);
+	}
+
+	@Override
+	public List<ResponseCountPlantDTO> getCountPlants() {
+		String userEmail = userService.getCurrentUserEmail();
+
+		List<PlantEntity> plantEntities = plantRepository.findAllByOwner_Email(userEmail);
+		List<ResponseCountPlantDTO> responseCountPlantDTOS = new ArrayList<>();
+
+		for (PlantEntity plantEntity : plantEntities) {
+			ResponseCountPlantDTO responseCountPlantDTO = new ResponseCountPlantDTO();
+			responseCountPlantDTO.setId(plantEntity.getId());
+			responseCountPlantDTO.setName(plantEntity.getName());
+			responseCountPlantDTO.setCountry(plantEntity.getCountry());
+
+			ResponseAlertCount responseAlertCount = countAlertsForPlant(plantEntity);
+
+			responseCountPlantDTO.setMediumAlerts(responseAlertCount.getMediumAlerts());
+			responseCountPlantDTO.setRedAlerts(responseAlertCount.getRedAlerts());
+			responseCountPlantDTO.setReadingsOk(responseAlertCount.getReadingsOk());
+			responseCountPlantDTOS.add(responseCountPlantDTO);
+		}
+		return responseCountPlantDTOS;
+	}
+
+	private ResponseAlertCount countAlertsForPlant(PlantEntity plantEntity) {
+		int readingsOk = 0;
+		int mediumAlerts = 0;
+		int redAlerts = 0;
+
+		for (SensorEntity sensorEntity : plantEntity.getSensors()) {
+			for (ReadingEntity readingEntity : sensorEntity.getReadings()) {
+				if (readingEntity.getAlerts().isEmpty()) {
+					readingsOk++;
+				} else {
+					for (AlertEntity alertEntity : readingEntity.getAlerts()) {
+						if (alertEntity.getType().equals(AlertType.MEDIA)) {
+							mediumAlerts++;
+						} else if (alertEntity.getType().equals(AlertType.ROJA)) {
+							redAlerts++;
+						}
+					}
+				}
+			}
+		}
+
+		return new ResponseAlertCount(readingsOk, mediumAlerts, redAlerts);
 	}
 }

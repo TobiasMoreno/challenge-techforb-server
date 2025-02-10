@@ -44,7 +44,7 @@ class AlertControllerTest {
 		responseAlertDTO = new ResponseAlertDTO();
 		responseAlertDTO.setId(1L);
 		responseAlertDTO.setMessage("Test Alert");
-		responseAlertDTO.setType(AlertType.ALERTA_MEDIA);
+		responseAlertDTO.setType(AlertType.MEDIA);
 	}
 
 
@@ -71,7 +71,7 @@ class AlertControllerTest {
 
 	@Test
 	void testGetAlertsByType() throws Exception {
-		when(alertService.getAlertsByType(AlertType.ALERTA_MEDIA)).thenReturn(List.of(responseAlertDTO));
+		when(alertService.getAlertsByType(AlertType.MEDIA)).thenReturn(List.of(responseAlertDTO));
 
 		mockMvc.perform(get("/api/alerts/type")
 						.param("type", "ALERTA_MEDIA")
@@ -84,7 +84,7 @@ class AlertControllerTest {
 
 	@Test
 	void testGetAlertsByType_NotFound() throws Exception {
-		when(alertService.getAlertsByType(AlertType.ALERTA_MEDIA)).thenReturn(List.of());
+		when(alertService.getAlertsByType(AlertType.MEDIA)).thenReturn(List.of());
 
 		mockMvc.perform(get("/api/alerts/type")
 						.param("type", "ALERTA_MEDIA")

@@ -62,16 +62,16 @@ class AlertServiceImplTest {
 		alert = new AlertEntity();
 		alert.setId(1L);
 		alert.setUser(user);
-		alert.setType(AlertType.ALERTA_ROJA);
+		alert.setType(AlertType.ROJA);
 		alert.setMessage("Alerta Roja");
 
 		requestAlertDTO = new RequestAlertDTO();
-		requestAlertDTO.setType(AlertType.ALERTA_MEDIA);
+		requestAlertDTO.setType(AlertType.MEDIA);
 		requestAlertDTO.setMessage("Warning alert");
 
 		responseAlertDTO = new ResponseAlertDTO();
 		responseAlertDTO.setId(1L);
-		responseAlertDTO.setType(AlertType.ALERTA_ROJA);
+		responseAlertDTO.setType(AlertType.ROJA);
 		responseAlertDTO.setMessage("Alerta Roja");
 
 		when(userService.getCurrentUserEmail()).thenReturn("user@example.com");
@@ -132,22 +132,22 @@ class AlertServiceImplTest {
 
 	@Test
 	void testGetAlertsByType() {
-		when(alertRepository.findAllByTypeAndUser_Email(AlertType.ALERTA_ROJA, "user@example.com"))
+		when(alertRepository.findAllByTypeAndUser_Email(AlertType.ROJA, "user@example.com"))
 				.thenReturn(List.of(alert));
 		when(modelMapperUtils.mapAll(any(), eq(ResponseAlertDTO.class))).thenReturn(List.of(responseAlertDTO));
 
-		List<ResponseAlertDTO> alerts = alertService.getAlertsByType(AlertType.ALERTA_ROJA);
+		List<ResponseAlertDTO> alerts = alertService.getAlertsByType(AlertType.ROJA);
 		assertEquals(1, alerts.size());
 		assertEquals("Alerta Roja", alerts.get(0).getMessage());
 	}
 
 	@Test
 	void testGetAlertsByType_NotFound() {
-		when(alertRepository.findAllByTypeAndUser_Email(AlertType.ALERTA_ROJA, "user@example.com"))
+		when(alertRepository.findAllByTypeAndUser_Email(AlertType.ROJA, "user@example.com"))
 				.thenReturn(List.of(alert));
 		when(modelMapperUtils.mapAll(any(), eq(ResponseAlertDTO.class))).thenReturn(List.of());
 
-		List<ResponseAlertDTO> alerts = alertService.getAlertsByType(AlertType.ALERTA_ROJA);
+		List<ResponseAlertDTO> alerts = alertService.getAlertsByType(AlertType.ROJA);
 		assertEquals(0, alerts.size());
 	}
 

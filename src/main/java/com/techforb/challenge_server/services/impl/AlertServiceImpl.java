@@ -112,4 +112,16 @@ public class AlertServiceImpl implements AlertService {
 		return modelMapperUtils.mapAll(alertEntities, ResponseAlertDTO.class);
 	}
 
+	@Override
+	public long getMediumAlertsCountByUser() {
+		String userEmail = userService.getCurrentUserEmail();
+		return alertRepository.countMediumAlertsByUser_Email(userEmail);
+	}
+
+	@Override
+	public long getRedAlertsCountByUser(){
+		String userEmail = userService.getCurrentUserEmail();
+		return alertRepository.countRedAlertsByUser_Email(userEmail);
+	}
+
 }

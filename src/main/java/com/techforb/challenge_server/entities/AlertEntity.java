@@ -23,9 +23,13 @@ public class AlertEntity {
 	@Column(nullable = false)
 	private String message;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "reading_id", nullable = false)
 	private ReadingEntity reading;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sensor_id", nullable = false)
+	private SensorEntity sensor;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)

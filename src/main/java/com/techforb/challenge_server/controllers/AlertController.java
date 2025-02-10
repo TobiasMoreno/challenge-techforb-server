@@ -89,5 +89,21 @@ public class AlertController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "Cantidad de Alertas Medias", description = "Cantidad de Alertas Medias por una planta específica del usuario")
+	@ApiResponse(responseCode = "200", description = "Cantidad de Alertas Medias")
+	@GetMapping("/count-medium")
+	public ResponseEntity<Long> getMediumAlertsCount() {
+		long count = alertService.getMediumAlertsCountByUser();
+		return ResponseEntity.ok(count);
+	}
+
+	@Operation(summary = "Cantidad de Alertas Rojas", description = "Cantidad de Alertas Rojas por una planta específica del usuario")
+	@ApiResponse(responseCode = "200", description = "Cantidad de Alertas Rojas")
+	@GetMapping("/count-red")
+	public ResponseEntity<Long> getRedAlertsCount() {
+		long count = alertService.getRedAlertsCountByUser();
+		return ResponseEntity.ok(count);
+	}
+
 
 }

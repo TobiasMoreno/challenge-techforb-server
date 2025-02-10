@@ -1,6 +1,5 @@
 package com.techforb.challenge_server.dtos.plant;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestPlantDTO {
-
-	@NotBlank(message = "El nombre de la planta es obligatorio")
+public class ResponseCountPlantDTO {
+	private Long id;
 	private String name;
-
 	private String country;
-
+	private Integer readingsOk;
+	private Integer mediumAlerts;
+	private Integer redAlerts;
 }

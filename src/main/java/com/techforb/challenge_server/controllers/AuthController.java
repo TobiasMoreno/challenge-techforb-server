@@ -3,9 +3,6 @@ package com.techforb.challenge_server.controllers;
 import com.techforb.challenge_server.dtos.auth.AuthResponse;
 import com.techforb.challenge_server.dtos.auth.LoginRequest;
 import com.techforb.challenge_server.dtos.auth.RegisterRequest;
-import com.techforb.challenge_server.entities.AlertEntity;
-import com.techforb.challenge_server.entities.ReadingEntity;
-import com.techforb.challenge_server.entities.UserEntity;
 import com.techforb.challenge_server.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +33,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh-token")
-	public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		authService.refreshToken(request, response);
+	public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		return authService.refreshToken(request, response);
 	}
 }

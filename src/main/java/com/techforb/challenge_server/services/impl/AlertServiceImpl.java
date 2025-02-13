@@ -16,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -31,12 +32,20 @@ public class AlertServiceImpl implements AlertService {
 	@Override
 	public List<ResponseAlertDTO> getAllAlerts() {
 		String userEmail = userService.getCurrentUserEmail();
-		return modelMapperUtils.mapAll(
-				alertRepository.findAllByUser_Email(userEmail), ResponseAlertDTO.class);
+		List<AlertEntity> alerts = alertRepository.findAllByUser_Email(userEmail);
+
+		if (alerts.isEmpty()) {
+			throw new EntityNotFoundException("No se encontraron alertas para el usuario: " + userEmail);
+		}
+
+		return modelMapperUtils.mapAll(alerts, ResponseAlertDTO.class);
 	}
 
 	@Override
 	public ResponseAlertDTO getAlertById(Long id) {
+		if (id == null || id < 1) {
+			throw new IllegalArgumentException("El ID de la alerta no es válido.");
+		}
 		String userEmail = userService.getCurrentUserEmail();
 		return alertRepository.findByIdAndUser_Email(id, userEmail)
 				.map(alert -> modelMapperUtils.map(alert, ResponseAlertDTO.class))
@@ -46,6 +55,11 @@ public class AlertServiceImpl implements AlertService {
 	@Override
 	public ResponseAlertDTO createAlert(RequestAlertDTO requestAlertDTO) {
 		String userEmail = userService.getCurrentUserEmail();
+
+		if (requestAlertDTO.getType() == null || requestAlertDTO.getMessage() == null || requestAlertDTO.getMessage().isBlank()) {
+			throw new IllegalArgumentException("El tipo y mensaje de la alerta no pueden estar vacíos.");
+		}
+
 		ReadingEntity readingEntity = readingRepository.findById(requestAlertDTO.getReadingId())
 				.orElseThrow(() -> new EntityNotFoundException("Lectura no encontrada"));
 
@@ -62,6 +76,14 @@ public class AlertServiceImpl implements AlertService {
 
 	@Override
 	public ResponseAlertDTO updateAlertById(Long id, RequestAlertDTO requestAlertDTO) {
+		if (id == null || id < 1) {
+			throw new IllegalArgumentException("El ID de la alerta no es válido.");
+		}
+
+		if (requestAlertDTO.getType() == null || requestAlertDTO.getMessage() == null || requestAlertDTO.getMessage().isBlank()) {
+			throw new IllegalArgumentException("El tipo y mensaje de la alerta no pueden estar vacíos.");
+		}
+
 		String userEmail = userService.getCurrentUserEmail();
 		AlertEntity alertEntity = alertRepository.findByIdAndUser_Email(id, userEmail)
 				.orElseThrow(() -> new EntityNotFoundException("La alerta no existe para el usuario: " + userEmail));
@@ -75,6 +97,10 @@ public class AlertServiceImpl implements AlertService {
 
 	@Override
 	public void deleteAlertById(Long id) {
+		if (id == null || id < 1) {
+			throw new IllegalArgumentException("El ID de la alerta no es válido.");
+		}
+
 		String userEmail = userService.getCurrentUserEmail();
 
 		AlertEntity alertEntity = alertRepository.findByIdAndUser_Email(id, userEmail)
@@ -105,8 +131,8 @@ public class AlertServiceImpl implements AlertService {
 		}
 
 		List<AlertEntity> alertEntities = alertRepository.findAllByReading_IdAndUser_Email(readingEntity.getId(), userEmail);
-		if (alertEntities.isEmpty()) {
-			throw new EntityNotFoundException("No hay alertas asociadas a la lectura para el usuario: " + userEmail);
+		if (alertEntities == null) {
+			throw new EntityNotFoundException("Error al obtener alertas para la lectura ID: " + readingEntity.getId());
 		}
 
 		return modelMapperUtils.mapAll(alertEntities, ResponseAlertDTO.class);
@@ -119,7 +145,7 @@ public class AlertServiceImpl implements AlertService {
 	}
 
 	@Override
-	public long getRedAlertsCountByUser(){
+	public long getRedAlertsCountByUser() {
 		String userEmail = userService.getCurrentUserEmail();
 		return alertRepository.countRedAlertsByUser_Email(userEmail);
 	}

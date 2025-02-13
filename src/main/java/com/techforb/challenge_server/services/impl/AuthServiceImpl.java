@@ -1,6 +1,5 @@
 package com.techforb.challenge_server.services.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techforb.challenge_server.common.mapper.ModelMapperUtils;
 import com.techforb.challenge_server.dtos.auth.AuthResponse;
 import com.techforb.challenge_server.dtos.auth.LoginRequest;
@@ -15,12 +14,14 @@ import com.techforb.challenge_server.services.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Objects;
 
 @Service
@@ -88,31 +89,35 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = jwtService.parseJwt(request);
 
 		if (Objects.isNull(refreshToken)) {
-			return;
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 		String userEmail = jwtService.getUsernameFromToken(refreshToken);
 
-		if (Objects.nonNull(userEmail)) {
-			UserEntity userEntity = userRepository.findByEmail(userEmail).orElseThrow();
-
-			if (jwtService.validateToken(refreshToken, userEntity)) {
-				String accessToken = jwtService.generateToken(userEntity);
-
-				tokenService.revokeAllUserTokens(userEntity.getId());
-				tokenService.saveUserToken(modelMapperUtils.map(userEntity, User.class), accessToken);
-
-				AuthResponse authResponse = AuthResponse.builder()
-						.accessToken(accessToken)
-						.refreshToken(refreshToken)
-						.build();
-
-				new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-			}
+		if (Objects.isNull(userEmail)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
+
+		UserEntity userEntity = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+		if (!jwtService.validateToken(refreshToken, userEntity)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+
+		String accessToken = jwtService.generateToken(userEntity);
+		tokenService.revokeAllUserTokens(userEntity.getId());
+		tokenService.saveUserToken(modelMapperUtils.map(userEntity, User.class), accessToken);
+
+		AuthResponse authResponse = AuthResponse.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.build();
+
+		return ResponseEntity.ok(authResponse);
 	}
 }

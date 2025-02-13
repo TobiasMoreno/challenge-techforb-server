@@ -54,6 +54,9 @@ public class ReadingServiceImpl implements ReadingService {
 
 	@Override
 	public ResponseReadingDTO getReadingById(Long id, String currentUserEmail) {
+		if(id == null || id < 0){
+			throw new IllegalArgumentException("El id del reading no puede ser nulo o menor a 0");
+		}
 		ReadingEntity readingEntity = readingRepository.findById(id).orElse(null);
 		if (readingEntity == null) {
 			throw new EntityNotFoundException("No se encontraron lecturas con ese id");
@@ -70,13 +73,19 @@ public class ReadingServiceImpl implements ReadingService {
 
 	@Override
 	public ResponseReadingDTO createReading(RequestReadingDTO readingDTO, String userEmail) {
+		if (readingDTO == null) {
+			throw new IllegalArgumentException("La lectura no puede ser nula.");
+		}
+
 		UserEntity userEntity = userService.getCurrentUserEntity();
 
 		ReadingEntity readingEntity = modelMapperUtils.map(readingDTO, ReadingEntity.class);
 		readingEntity.setUser(userEntity);
 
-		List<AlertEntity> alertEntities = modelMapperUtils.mapAll(readingDTO.getAlerts(), AlertEntity.class);
-		readingEntity.setAlerts(alertEntities);
+		if (readingDTO.getAlerts() != null) {
+			List<AlertEntity> alertEntities = modelMapperUtils.mapAll(readingDTO.getAlerts(), AlertEntity.class);
+			readingEntity.setAlerts(alertEntities);
+		}
 
 		readingRepository.save(readingEntity);
 
@@ -85,6 +94,10 @@ public class ReadingServiceImpl implements ReadingService {
 
 	@Override
 	public ResponseReadingDTO updateReading(Long id, RequestUpdateReadingDTO readingDTO,String currentUserEmail) {
+		if (id == null || id < 1) {
+			throw new IllegalArgumentException("ID de lectura inválido.");
+		}
+
 		ReadingEntity readingEntity = readingRepository.findById(id).orElse(null);
 
 		if (readingEntity == null) {
@@ -106,6 +119,10 @@ public class ReadingServiceImpl implements ReadingService {
 
 	@Override
 	public void deleteReading(Long id,String currentUserEmail) {
+		if (id == null || id < 1) {
+			throw new IllegalArgumentException("ID de lectura inválido.");
+		}
+
 		ReadingEntity readingEntity = readingRepository.findById(id).orElse(null);
 		if (readingEntity == null) {
 			throw new EntityNotFoundException("No se encontraron lecturas con ese id");

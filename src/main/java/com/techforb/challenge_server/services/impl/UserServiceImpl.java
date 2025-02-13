@@ -19,13 +19,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ResponseUserDTO getUserByEmail(String email) {
-		return modelMapperUtils.map(userRepository.findByEmail(email), ResponseUserDTO.class);
+		return modelMapperUtils.map(userRepository.findByEmail(email).get(), ResponseUserDTO.class);
 	}
 
 	@Override
 	public String getCurrentUserEmail() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated()) {
+		if (authentication == null) {
+			throw new RuntimeException("No hay contexto de seguridad disponible.");
+		}
+		if (!authentication.isAuthenticated() || authentication.getName() == null) {
 			throw new RuntimeException("No se pudo obtener el correo del usuario, autenticación no válida.");
 		}
 		return authentication.getName();
@@ -34,8 +37,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserEntity getCurrentUserEntity() {
-		return userRepository.findByEmail(getCurrentUserEmail())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado con el correo: " + getCurrentUserEmail()));
+		String email = getCurrentUserEmail();
+		return userRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado con el correo: " + email));
 	}
 
 

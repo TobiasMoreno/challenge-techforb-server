@@ -49,7 +49,6 @@ public class PlantServiceImpl implements PlantService {
 		if (responseUserDTO == null) {
 			throw new EntityNotFoundException("Usuario no encontrado: " + userEmail);
 		}
-
 		PlantEntity plantEntity = modelMapperUtils.map(requestPlantDTO, PlantEntity.class);
 		plantEntity.setOwner(modelMapperUtils.map(responseUserDTO, UserEntity.class));
 
@@ -63,6 +62,10 @@ public class PlantServiceImpl implements PlantService {
 		String userEmail = userService.getCurrentUserEmail();
 		PlantEntity plantEntity = plantRepository.findByIdAndOwner_Email(id, userEmail)
 				.orElseThrow(() -> new EntityNotFoundException("La planta no existe para el usuario: " + userEmail));
+
+		if(requestPlantDTO.getCountry() == null || requestPlantDTO.getCountry().isEmpty()) {
+			throw new IllegalArgumentException("El país no puede estar vacío");
+		}
 
 		plantEntity.setName(requestPlantDTO.getName());
 		plantEntity.setCountry(requestPlantDTO.getCountry());

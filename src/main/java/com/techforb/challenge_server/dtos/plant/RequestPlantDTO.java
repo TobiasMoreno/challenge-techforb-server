@@ -13,6 +13,7 @@ public class RequestPlantDTO {
 	@NotBlank(message = "El nombre de la planta es obligatorio")
 	private String name;
 
+	@NotBlank(message = "El pais de la planta es obligatorio")
 	private String country;
 
 }

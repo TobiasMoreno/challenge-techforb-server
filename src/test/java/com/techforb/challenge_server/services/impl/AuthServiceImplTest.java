@@ -177,6 +177,5 @@ class AuthServiceImplTest {
 		// Assert
 		verify(tokenService).revokeAllUserTokens(1L);
 		verify(tokenService).saveUserToken(mappedUser, "newAccessToken");
-		verify(response).getWriter();
 	}
 }

@@ -2,9 +2,11 @@ package com.techforb.challenge_server.services.impl;
 
 import com.techforb.challenge_server.common.mapper.ModelMapperUtils;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
+import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.dtos.user.ResponseUserDTO;
 import com.techforb.challenge_server.entities.PlantEntity;
+import com.techforb.challenge_server.entities.SensorEntity;
 import com.techforb.challenge_server.entities.UserEntity;
 import com.techforb.challenge_server.repositories.PlantRepository;
 import com.techforb.challenge_server.services.UserService;
@@ -45,7 +47,7 @@ class PlantServiceImplTest {
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		plantEntity = new PlantEntity(1L, "Plant1",null, new UserEntity(), null);
+		plantEntity = new PlantEntity(1L, "Plant1", "Argentina", new UserEntity(), List.of(new SensorEntity[]{}));
 
 		responseUserDTO = new ResponseUserDTO();
 		responseUserDTO.setId(1L);
@@ -54,20 +56,33 @@ class PlantServiceImplTest {
 
 		requestPlantDTO = new RequestPlantDTO();
 		requestPlantDTO.setName("Plant1");
+		requestPlantDTO.setCountry("Argentina");
 		when(userService.getCurrentUserEmail()).thenReturn("user@example.com");
+		when(userService.getUserByEmail(responseUserDTO.getEmail())).thenReturn(responseUserDTO);
 	}
 
 	@Test
 	void testGetAllPlants() {
 		String userEmail = "user@example.com";
 		when(plantRepository.findAllByOwner_Email(userEmail)).thenReturn(List.of(plantEntity));
-		when(modelMapperUtils.mapAll(List.of(plantEntity), ResponsePlantDTO.class)).thenReturn(List.of(new ResponsePlantDTO(),new ResponsePlantDTO()));
+		when(modelMapperUtils.mapAll(List.of(plantEntity), ResponsePlantDTO.class)).thenReturn(List.of(new ResponsePlantDTO(), new ResponsePlantDTO()));
 
 		List<ResponsePlantDTO> result = plantService.getAllPlants();
 
 		assertNotNull(result);
 		assertEquals(2, result.size());
 		verify(plantRepository, times(1)).findAllByOwner_Email(userEmail);
+	}
+
+	@Test
+	void testGetCountPlants_Success() {
+		when(plantRepository.findAllByOwner_Email("user@example.com")).thenReturn(List.of(plantEntity));
+
+		List<ResponseCountPlantDTO> result = plantService.getCountPlants();
+
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		verify(plantRepository, times(1)).findAllByOwner_Email("user@example.com");
 	}
 
 	@Test
@@ -86,6 +101,17 @@ class PlantServiceImplTest {
 	void testGetPlantById_NotFound() {
 		String userEmail = "user@example.com";
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.empty());
+
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+			plantService.getPlantById(1L);
+		});
+
+		assertEquals("Planta no encontrada para el usuario: user@example.com", exception.getMessage());
+	}
+
+	@Test
+	void testGetPlantById_UnauthorizedAccess() {
+		when(plantRepository.findByIdAndOwner_Email(1L, "otro@example.com")).thenReturn(Optional.empty());
 
 		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
 			plantService.getPlantById(1L);
@@ -122,6 +148,28 @@ class PlantServiceImplTest {
 	}
 
 	@Test
+	void testCreatePlant_InvalidName() {
+		requestPlantDTO.setName("");
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			plantService.createPlant(requestPlantDTO);
+		});
+
+		assertEquals("El nombre de la planta no puede estar vacío", exception.getMessage());
+	}
+
+	@Test
+	void testCreatePlant_InvalidCountry() {
+		requestPlantDTO.setCountry("");
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			plantService.createPlant(requestPlantDTO);
+		});
+
+		assertEquals("El país no puede estar vacío", exception.getMessage());
+	}
+
+	@Test
 	void testUpdatePlantById_Success() {
 		String userEmail = "user@example.com";
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.of(plantEntity));
@@ -148,6 +196,20 @@ class PlantServiceImplTest {
 	}
 
 	@Test
+	void testUpdatePlantById_InvalidCountry() {
+		String userEmail = "user@example.com";
+		requestPlantDTO.setCountry("");
+
+		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.of(plantEntity));
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			plantService.updatePlantById(1L, requestPlantDTO);
+		});
+
+		assertEquals("El país no puede estar vacío", exception.getMessage());
+	}
+
+	@Test
 	void testDeletePlantById_Success() {
 		String userEmail = "user@example.com";
 		when(plantRepository.findByIdAndOwner_Email(1L, userEmail)).thenReturn(Optional.of(plantEntity));
@@ -168,4 +230,5 @@ class PlantServiceImplTest {
 
 		assertEquals("La planta no existe para el usuario: user@example.com", exception.getMessage());
 	}
+
 }

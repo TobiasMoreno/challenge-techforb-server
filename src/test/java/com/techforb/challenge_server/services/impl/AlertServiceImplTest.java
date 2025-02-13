@@ -111,6 +111,18 @@ class AlertServiceImplTest {
 	}
 
 	@Test
+	void testCreateAlert_InvalidData() {
+		requestAlertDTO.setType(null);
+		requestAlertDTO.setMessage(null);
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			alertService.createAlert(requestAlertDTO);
+		});
+
+		assertEquals("El tipo y mensaje de la alerta no pueden estar vacíos.", exception.getMessage());
+	}
+
+	@Test
 	void testUpdateAlertById() {
 		when(alertRepository.findByIdAndUser_Email(1L, "user@example.com")).thenReturn(Optional.of(alert));
 		when(alertRepository.save(alert)).thenReturn(alert);
@@ -122,12 +134,32 @@ class AlertServiceImplTest {
 	}
 
 	@Test
+	void testUpdateAlertById_InvalidMessage() {
+		requestAlertDTO.setMessage("");
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			alertService.updateAlertById(1L, requestAlertDTO);
+		});
+
+		assertEquals("El tipo y mensaje de la alerta no pueden estar vacíos.", exception.getMessage());
+	}
+
+	@Test
 	void testDeleteAlertById() {
 		when(alertRepository.findByIdAndUser_Email(1L, "user@example.com")).thenReturn(Optional.of(alert));
 		doNothing().when(alertRepository).delete(alert);
 
 		assertDoesNotThrow(() -> alertService.deleteAlertById(1L));
 		verify(alertRepository, times(1)).delete(alert);
+	}
+
+	@Test
+	void testDeleteAlertById_InvalidId() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			alertService.deleteAlertById(0L);
+		});
+
+		assertEquals("El ID de la alerta no es válido.", exception.getMessage());
 	}
 
 	@Test
@@ -186,14 +218,18 @@ class AlertServiceImplTest {
 	}
 
 	@Test
-	void testGetAlertsByReadingId_NoAlertsFound() {
+	void testGetAlertsByReadingId_ShouldThrowException_WhenDatabaseError() {
 		ReadingEntity reading = new ReadingEntity();
-		when(alertRepository.findAllByReading_IdAndUser_Email(reading.getId(), "user@example.com")).thenReturn(List.of());
+		reading.setId(1L);
 
-		Exception exception = assertThrows(EntityNotFoundException.class, () -> {
+		when(alertRepository.findAllByReading_IdAndUser_Email(reading.getId(), "user@example.com"))
+				.thenReturn(null);
+
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
 			alertService.getAlertsByReadingId(reading);
 		});
 
-		assertEquals("No hay alertas asociadas a la lectura para el usuario: user@example.com", exception.getMessage());
+		assertEquals("Error al obtener alertas para la lectura ID: 1", exception.getMessage());
 	}
+
 }

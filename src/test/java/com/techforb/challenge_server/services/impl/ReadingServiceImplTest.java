@@ -4,6 +4,7 @@ import com.techforb.challenge_server.common.mapper.ModelMapperUtils;
 import com.techforb.challenge_server.dtos.reading.RequestReadingDTO;
 import com.techforb.challenge_server.dtos.reading.RequestUpdateReadingDTO;
 import com.techforb.challenge_server.dtos.reading.ResponseReadingDTO;
+import com.techforb.challenge_server.entities.AlertEntity;
 import com.techforb.challenge_server.entities.ReadingEntity;
 import com.techforb.challenge_server.entities.SensorEntity;
 import com.techforb.challenge_server.entities.UserEntity;
@@ -56,6 +57,7 @@ class ReadingServiceImplTest {
 
 	private UserEntity testUser;
 	private ReadingEntity testReading;
+	private AlertEntity testAlert;
 
 
 	@BeforeEach
@@ -65,7 +67,6 @@ class ReadingServiceImplTest {
 		testUser.setEmail("test@example.com");
 		testUser.setPassword("password");
 		testUser.setRole(Role.USER);
-		userRepository.save(testUser);
 
 		SensorEntity testSensor = new SensorEntity();
 		testSensor.setId(1L);
@@ -74,16 +75,18 @@ class ReadingServiceImplTest {
 		testSensor.setUser(testUser);
 		sensorRepository.save(testSensor);
 
+		testAlert = new AlertEntity();
 		testReading = new ReadingEntity();
 		testReading.setId(1L);
 		testReading.setUser(testUser);
 		testReading.setSensor(testSensor);
 		testReading.setReadingValue(22.5);
 		testReading.setTimestamp(LocalDateTime.now());
+		testReading.setAlerts(List.of(testAlert));
 		readingRepository.save(testReading);
 
 		Authentication authentication = mock(Authentication.class);
-		when(authentication.getName()).thenReturn(testUser.getEmail());
+		when(authentication.getName()).thenReturn("test@example.com");
 		when(authentication.isAuthenticated()).thenReturn(true);
 
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -126,6 +129,21 @@ class ReadingServiceImplTest {
 	}
 
 	@Test
+	void getReadingById_ShouldThrowIllegalArgumentException_WhenIdIsNullOrNegative() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.getReadingById(null, "test@example.com");
+		});
+
+		assertEquals("El id del reading no puede ser nulo o menor a 0", exception.getMessage());
+
+		IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.getReadingById(-1L, "test@example.com");
+		});
+
+		assertEquals("El id del reading no puede ser nulo o menor a 0", exception2.getMessage());
+	}
+
+	@Test
 	void getReadingById_ShouldReturnNotFound() {
 		when(readingRepository.findById(testReading.getId())).thenReturn(Optional.empty());
 
@@ -149,16 +167,15 @@ class ReadingServiceImplTest {
 
 	@Test
 	void createReading_ShouldReturnCreatedReading() {
-		when(userRepository.findByEmail(testUser.getEmail()))
-				.thenReturn(Optional.of(testUser));
-		when(userService.getCurrentUserEntity()).thenReturn(testUser);
+		when(userService.getCurrentUserEmail()).thenReturn("test@example.com");
+		when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 		when(readingRepository.save(testReading)).thenReturn(testReading);
 
 		RequestReadingDTO request = new RequestReadingDTO();
 		ResponseReadingDTO createdReading = readingService.createReading(request, "test@example.com");
 
+		System.out.println(createdReading.getId());
 		assertNotNull(createdReading);
-		assertNotNull(createdReading.getId());
 	}
 
 	@Test
@@ -211,6 +228,23 @@ class ReadingServiceImplTest {
 		});
 		assertEquals("Acceso no Autorizado", exception.getMessage());
 	}
+	@Test
+	void updateReading_ShouldThrowIllegalArgumentException_WhenIdIsInvalid() {
+		RequestUpdateReadingDTO updateDTO = new RequestUpdateReadingDTO();
+		updateDTO.setReadingValue(25.0);
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.updateReading(null, updateDTO, "test@example.com");
+		});
+
+		assertEquals("ID de lectura inválido.", exception.getMessage());
+
+		exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.updateReading(-1L, updateDTO, "test@example.com");
+		});
+
+		assertEquals("ID de lectura inválido.", exception.getMessage());
+	}
 
 	@Test
 	void deleteReading_ShouldDeleteReading_WhenValidDataProvided() {
@@ -253,6 +287,30 @@ class ReadingServiceImplTest {
 			readingService.deleteReading(readingId, "unauthorized@example.com");
 		});
 		assertEquals("Acceso no Autorizado", exception.getMessage());
+	}
+
+	@Test
+	void deleteReading_ShouldThrowIllegalArgumentException_WhenIdIsInvalid() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.deleteReading(null, "test@example.com");
+		});
+
+		assertEquals("ID de lectura inválido.", exception.getMessage());
+
+		exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.deleteReading(-1L, "test@example.com");
+		});
+
+		assertEquals("ID de lectura inválido.", exception.getMessage());
+	}
+
+	@Test
+	void createReading_ShouldThrowIllegalArgumentException_WhenReadingIsNull() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			readingService.createReading(null, "test@example.com");
+		});
+
+		assertEquals("La lectura no puede ser nula.", exception.getMessage());
 	}
 
 }

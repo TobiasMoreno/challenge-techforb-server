@@ -2,9 +2,12 @@ package com.techforb.challenge_server.services.impl;
 
 import com.techforb.challenge_server.common.mapper.ModelMapperUtils;
 import com.techforb.challenge_server.dtos.alert.ResponseAlertCount;
+import com.techforb.challenge_server.dtos.alert.ResponseAlertDTO;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
+import com.techforb.challenge_server.dtos.reading.ResponseReadingDTO;
+import com.techforb.challenge_server.dtos.sensor.ResponseSensorDTO;
 import com.techforb.challenge_server.dtos.user.ResponseUserDTO;
 import com.techforb.challenge_server.entities.*;
 import com.techforb.challenge_server.models.AlertType;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +40,34 @@ public class PlantServiceImpl implements PlantService {
 	@Override
 	public ResponsePlantDTO getPlantById(Long id) {
 		String userEmail = userService.getCurrentUserEmail();
-		return plantRepository.findByIdAndOwner_Email(id, userEmail)
-				.map(plant -> modelMapperUtils.map(plant, ResponsePlantDTO.class))
+
+		PlantEntity plantEntity = plantRepository.findByIdAndOwner_Email(id, userEmail)
 				.orElseThrow(() -> new EntityNotFoundException("Planta no encontrada para el usuario: " + userEmail));
+
+		ResponsePlantDTO responsePlantDTO = modelMapperUtils.map(plantEntity, ResponsePlantDTO.class);
+		responsePlantDTO.setOwnerEmail(plantEntity.getOwner().getEmail());
+
+		List<ResponseSensorDTO> responseSensorDTOList = plantEntity.getSensors().stream()
+				.map(sensor -> {
+					ResponseSensorDTO responseSensorDTO = modelMapperUtils.map(sensor, ResponseSensorDTO.class);
+
+					List<ResponseReadingDTO> readingDTOList = sensor.getReadings().stream()
+							.map(reading -> {
+								ResponseReadingDTO responseReadingDTO = modelMapperUtils.map(reading, ResponseReadingDTO.class);
+								responseReadingDTO.setAlerts(reading.getAlerts().stream()
+										.map(alert -> modelMapperUtils.map(alert, ResponseAlertDTO.class))
+										.toList());
+								return responseReadingDTO;
+							}).toList();
+
+					responseSensorDTO.setReadings(readingDTOList);
+					return responseSensorDTO;
+				}).toList();
+
+		responsePlantDTO.setSensors(responseSensorDTOList);
+		return responsePlantDTO;
 	}
+
 
 	@Override
 	public ResponsePlantDTO createPlant(RequestPlantDTO requestPlantDTO) {

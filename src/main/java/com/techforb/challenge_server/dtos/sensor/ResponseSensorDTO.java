@@ -15,6 +15,5 @@ public class ResponseSensorDTO {
 	private Long id;
 	private String type;
 	private boolean isAvailable;
-	private ResponsePlantDTO plant;
 	private List<ResponseReadingDTO> readings;
 }

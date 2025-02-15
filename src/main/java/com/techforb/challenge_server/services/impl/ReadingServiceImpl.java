@@ -44,7 +44,6 @@ public class ReadingServiceImpl implements ReadingService {
 
 		for (ReadingEntity readingEntity : readingEntities) {
 			ResponseReadingDTO responseReadingDTO = modelMapperUtils.map(readingEntity, ResponseReadingDTO.class);
-			responseReadingDTO.setSensor(modelMapperUtils.map(readingEntity.getSensor(),ResponseSensorDTO.class));
 			responseReadingDTO.setAlerts(alertService.getAlertsByReadingId(readingEntity));
 
 			readings.add(responseReadingDTO);
@@ -66,7 +65,6 @@ public class ReadingServiceImpl implements ReadingService {
 		}
 
 		ResponseReadingDTO responseReadingDTO = modelMapperUtils.map(readingEntity, ResponseReadingDTO.class);
-		responseReadingDTO.setSensor(modelMapperUtils.map(readingEntity.getSensor(),ResponseSensorDTO.class));
 		responseReadingDTO.setAlerts(alertService.getAlertsByReadingId(readingEntity));
 		return responseReadingDTO;
 	}

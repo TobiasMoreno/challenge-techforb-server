@@ -16,6 +16,5 @@ public class ResponseReadingDTO {
 	private Long id;
 	private double readingValue;
 	private LocalDateTime timestamp;
-	private ResponseSensorDTO sensor;
 	private List<ResponseAlertDTO> alerts;
 }

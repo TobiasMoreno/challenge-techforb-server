@@ -13,5 +13,4 @@ public class ResponseAlertDTO {
 	private Long id;
 	private AlertType type;
 	private String message;
-	private ResponseReadingDTO reading;
 }

@@ -34,17 +34,17 @@ public class SensorServiceImpl implements SensorService {
 		List<SensorEntity> sensors = sensorRepository.findAllByUser_EmailAndPlant_Id(userEmail, plantId);
 
 		return sensors.stream().map(sensor -> {
-			int readingsOk = (int) sensor.getReadings().stream()
+			int readingsOk = (int) (sensor.getReadings() != null ? sensor.getReadings().stream()
 					.filter(reading -> reading.getAlerts().isEmpty())
-					.count();
+					.count() : 0);
 
-			int mediumAlerts = (int) sensor.getAlerts().stream()
+			int mediumAlerts = (int) (sensor.getAlerts() != null ?  sensor.getAlerts().stream()
 					.filter(alert -> alert.getType() == AlertType.MEDIA)
-					.count();
+					.count(): 0);
 
-			int redAlerts = (int) sensor.getAlerts().stream()
+			int redAlerts = (int) (sensor.getAlerts() != null ? sensor.getAlerts().stream()
 					.filter(alert -> alert.getType() == AlertType.ROJA)
-					.count();
+					.count() : 0);
 
 			return new ResponseSensorStatsDTO(sensor.getId(), sensor.getType(), readingsOk, mediumAlerts, redAlerts);
 		}).collect(Collectors.toList());

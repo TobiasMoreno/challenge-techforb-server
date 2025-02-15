@@ -15,17 +15,16 @@ Soy **Tobias Moreno**, un desarrollador web con experiencia en **Angular** y **S
 - **Spring Security con JWT**
 - **Spring Data JPA**
 - **Hibernate**
-- **Postgres + Docker**
+- **MySQL + Docker**
 - **Swagger + SpringDoc**
 
 ### Frontend (Angular)
 - **Angular Material**
-- **RxJS + NgRx**
 - **Bootstrap**
 
 ### Infraestructura
 - **Netlify** (Frontend)
-- **Render / Railway** (Backend)
+- **Railway** (Backend)
 
 ---
 
@@ -51,25 +50,3 @@ Soy **Tobias Moreno**, un desarrollador web con experiencia en **Angular** y **S
 git clone https://github.com/TobiasMoreno/challenge-techforb-server.git
 cd challenge-techforb-server
 ```
-
-### 2- Configurar la Base de Datos (PostgreSQL con Docker)
-Utiliza Docker para levantar un contenedor de PostgreSQL con la configuración necesaria:
-```bash
-docker run --name postgres-techforb -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=challenge_db -p 5432:5432 -d postgres:latest
-
-```
-
-### 3- Configurar el Backend
-```bash
-server.port=8080
-spring.datasource.url=jdbc:postgresql://localhost:5432/challenge_db
-spring.datasource.username=admin
-spring.datasource.password=admin
-spring.datasource.driver-class-name=org.postgresql.Driver
-spring.jpa.hibernate.ddl-auto=update
-springdoc.packages-to-scan=com.techforb.challenge_server
-jwt.secret=TuClaveSecretaSuperSegura
-jwt.expiration=3600000
-```
-
-### 4- Ejecutar el proyecto

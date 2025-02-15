@@ -67,7 +67,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:4200","https://global-monitoring-tobias-moreno-dev.netlify.app"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

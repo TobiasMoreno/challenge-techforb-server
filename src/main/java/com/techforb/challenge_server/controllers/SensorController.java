@@ -2,6 +2,7 @@ package com.techforb.challenge_server.controllers;
 
 import com.techforb.challenge_server.common.dto.ApiError;
 import com.techforb.challenge_server.dtos.sensor.ResponseSensorDTO;
+import com.techforb.challenge_server.dtos.sensor.ResponseSensorStatsDTO;
 import com.techforb.challenge_server.services.SensorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +32,10 @@ public class SensorController {
 	@GetMapping("/disabled")
 	public ResponseEntity<List<ResponseSensorDTO>> getDisabledSensors() {
 		return ResponseEntity.ok(sensorService.findByAvailableFalseAndUser_Email());
+	}
+
+	@GetMapping("/{plantId}/stats")
+	public ResponseEntity<List<ResponseSensorStatsDTO>> getSensorStatsByPlant(@PathVariable Long plantId) {
+		return ResponseEntity.ok(sensorService.getSensorStatsByPlant(plantId));
 	}
 }

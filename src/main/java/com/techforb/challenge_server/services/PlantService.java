@@ -3,6 +3,7 @@ package com.techforb.challenge_server.services;
 import com.techforb.challenge_server.dtos.plant.RequestPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
+import com.techforb.challenge_server.dtos.sensor.ResponseSensorStatsDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

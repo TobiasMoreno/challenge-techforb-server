@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SensorRepository extends JpaRepository<SensorEntity, Long> {
 	List<SensorEntity> findByIsAvailableFalseAndUser_Email(@Email String email);
+
+	List<SensorEntity> findAllByUser_EmailAndPlant_Id(@Email String userEmail, Long plantId);
 }

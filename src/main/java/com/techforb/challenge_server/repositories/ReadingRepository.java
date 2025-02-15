@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ReadingRepository extends JpaRepository<ReadingEntity, Long>{
 	List<ReadingEntity> findAllByUser_Email(@Email String userEmail);
+	List<ReadingEntity> findAllBySensor_Plant_Id(Long plantId);
 }

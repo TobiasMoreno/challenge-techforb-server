@@ -8,6 +8,7 @@ import com.techforb.challenge_server.dtos.plant.ResponseCountPlantDTO;
 import com.techforb.challenge_server.dtos.plant.ResponsePlantDTO;
 import com.techforb.challenge_server.dtos.reading.ResponseReadingDTO;
 import com.techforb.challenge_server.dtos.sensor.ResponseSensorDTO;
+import com.techforb.challenge_server.dtos.sensor.ResponseSensorStatsDTO;
 import com.techforb.challenge_server.dtos.user.ResponseUserDTO;
 import com.techforb.challenge_server.entities.*;
 import com.techforb.challenge_server.models.AlertType;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
